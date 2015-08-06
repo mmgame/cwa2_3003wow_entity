@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.UsereconomyEntity">
+	<resultMap id="usereconomyEntity" type="com.cwa.data.entity.domain.UsereconomyEntity">
+		<result column="userId" property="userId" />
+		<result column="moneyType" property="moneyType" />
+		<result column="moneyCount" property="moneyCount" />
+	</resultMap>
+	
+	<select id="selectByUserIdAndMoneyType" resultMap="usereconomyEntity">
+		select * from `${table_number}_usereconomy` where (`userId`=#{userId} and `moneyType`=#{moneyType})
+	</select>
+	<select id="selectByUserId" resultMap="usereconomyEntity">
+		select * from `${table_number}_usereconomy` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="usereconomyEntity">
+		select * from `${table_number}_usereconomy`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_usereconomy` (`userId`,`moneyType`,`moneyCount`) values (#{entity.userId},#{entity.moneyType},#{entity.moneyCount})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_usereconomy` set `userId`=#{entity.userId},`moneyType`=#{entity.moneyType},`moneyCount`=#{entity.moneyCount} where (`userId`=#{entity.userId} and `moneyType`=#{entity.moneyType})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_usereconomy` where (`userId`=#{entity.userId} and `moneyType`=#{entity.moneyType})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_usereconomy` (`userId`,`moneyType`,`moneyCount`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.moneyType},#{item.moneyCount})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_usereconomy` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId} and `moneyType`=#{item.moneyType})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'usereconomy\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_usereconomy` (
+			`userId` bigint(20) DEFAULT '0',
+			`moneyType` int(3) DEFAULT '0',
+			`moneyCount` int(11) DEFAULT '0',
+		PRIMARY KEY (`userId`,`moneyType`),
+		KEY `userId` (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_usereconomy` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `moneyType`=#{item.moneyType}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `moneyType`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `moneyType`=#{item.moneyType}) then #{item.moneyType} 
+       	</foreach>
+        end,
+		 `moneyCount`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `moneyType`=#{item.moneyType}) then #{item.moneyCount} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId} and `moneyType`=#{item.moneyType})
+       	</foreach>
+	</update>
+</mapper>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.VipEntity">
+	<resultMap id="vipEntity" type="com.cwa.data.entity.domain.VipEntity">
+		<result column="userId" property="userId" />
+		<result column="vipLevel" property="vipLevel" />
+		<result column="vipExp" property="vipExp" />
+		<result column="rewardState" property="rewardState" />
+	</resultMap>
+	
+	<select id="selectByUserId" resultMap="vipEntity">
+		select * from `${table_number}_vip` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="vipEntity">
+		select * from `${table_number}_vip`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_vip` (`userId`,`vipLevel`,`vipExp`,`rewardState`) values (#{entity.userId},#{entity.vipLevel},#{entity.vipExp},#{entity.rewardState})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_vip` set `userId`=#{entity.userId},`vipLevel`=#{entity.vipLevel},`vipExp`=#{entity.vipExp},`rewardState`=#{entity.rewardState} where (`userId`=#{entity.userId})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_vip` where (`userId`=#{entity.userId})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_vip` (`userId`,`vipLevel`,`vipExp`,`rewardState`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.vipLevel},#{item.vipExp},#{item.rewardState})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_vip` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'vip\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_vip` (
+			`userId` bigint(20) DEFAULT '0',
+			`vipLevel` int(11) DEFAULT '0',
+			`vipExp` int(11) DEFAULT '0',
+			`rewardState` int(11) DEFAULT '0',
+		PRIMARY KEY (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_vip` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `vipLevel`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.vipLevel} 
+       	</foreach>
+        end,
+		 `vipExp`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.vipExp} 
+       	</foreach>
+        end,
+		 `rewardState`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.rewardState} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId})
+       	</foreach>
+	</update>
+</mapper>

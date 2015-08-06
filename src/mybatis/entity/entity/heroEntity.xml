@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.HeroEntity">
+	<resultMap id="heroEntity" type="com.cwa.data.entity.domain.HeroEntity">
+		<result column="userId" property="userId" />
+		<result column="heroId" property="heroId" />
+		<result column="level" property="level" />
+		<result column="experience" property="experience" />
+		<result column="starLevel" property="starLevel" />
+		<result column="quality" property="quality" />
+		<result column="patienceTrain" property="patienceTrain" />
+		<result column="trainState" property="trainState" />
+		<result column="waitPatienceTrain" property="waitPatienceTrain" />
+		<result column="trainType" property="trainType" />
+	</resultMap>
+	
+	<select id="selectByUserIdAndHeroId" resultMap="heroEntity">
+		select * from `${table_number}_hero` where (`userId`=#{userId} and `heroId`=#{heroId})
+	</select>
+	<select id="selectByUserId" resultMap="heroEntity">
+		select * from `${table_number}_hero` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="heroEntity">
+		select * from `${table_number}_hero`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_hero` (`userId`,`heroId`,`level`,`experience`,`starLevel`,`quality`,`patienceTrain`,`trainState`,`waitPatienceTrain`,`trainType`) values (#{entity.userId},#{entity.heroId},#{entity.level},#{entity.experience},#{entity.starLevel},#{entity.quality},#{entity.patienceTrain},#{entity.trainState},#{entity.waitPatienceTrain},#{entity.trainType})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_hero` set `userId`=#{entity.userId},`heroId`=#{entity.heroId},`level`=#{entity.level},`experience`=#{entity.experience},`starLevel`=#{entity.starLevel},`quality`=#{entity.quality},`patienceTrain`=#{entity.patienceTrain},`trainState`=#{entity.trainState},`waitPatienceTrain`=#{entity.waitPatienceTrain},`trainType`=#{entity.trainType} where (`userId`=#{entity.userId} and `heroId`=#{entity.heroId})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_hero` where (`userId`=#{entity.userId} and `heroId`=#{entity.heroId})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_hero` (`userId`,`heroId`,`level`,`experience`,`starLevel`,`quality`,`patienceTrain`,`trainState`,`waitPatienceTrain`,`trainType`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.heroId},#{item.level},#{item.experience},#{item.starLevel},#{item.quality},#{item.patienceTrain},#{item.trainState},#{item.waitPatienceTrain},#{item.trainType})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_hero` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId} and `heroId`=#{item.heroId})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'hero\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_hero` (
+			`userId` bigint(20) DEFAULT '0',
+			`heroId` int(11) DEFAULT '0',
+			`level` int(11) DEFAULT '0',
+			`experience` int(11) DEFAULT '0',
+			`starLevel` int(11) DEFAULT '0',
+			`quality` int(11) DEFAULT '0',
+			`patienceTrain` varchar(60) DEFAULT '',
+			`trainState` int(11) DEFAULT '0',
+			`waitPatienceTrain` varchar(60) DEFAULT '',
+			`trainType` int(11) DEFAULT '0',
+		PRIMARY KEY (`userId`,`heroId`),
+		KEY `userId` (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_hero` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `heroId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId}) then #{item.heroId} 
+       	</foreach>
+        end,
+		 `level`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId}) then #{item.level} 
+       	</foreach>
+        end,
+		 `experience`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId}) then #{item.experience} 
+       	</foreach>
+        end,
+		 `starLevel`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId}) then #{item.starLevel} 
+       	</foreach>
+        end,
+		 `quality`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId}) then #{item.quality} 
+       	</foreach>
+        end,
+		 `patienceTrain`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId}) then #{item.patienceTrain} 
+       	</foreach>
+        end,
+		 `trainState`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId}) then #{item.trainState} 
+       	</foreach>
+        end,
+		 `waitPatienceTrain`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId}) then #{item.waitPatienceTrain} 
+       	</foreach>
+        end,
+		 `trainType`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId}) then #{item.trainType} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId} and `heroId`=#{item.heroId})
+       	</foreach>
+	</update>
+</mapper>

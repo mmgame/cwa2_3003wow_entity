@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.MatchEntity">
+	<resultMap id="matchEntity" type="com.cwa.data.entity.domain.MatchEntity">
+		<result column="userId" property="userId" />
+		<result column="matchType" property="matchType" />
+		<result column="match_keyid" property="matchKeyId" />
+		<result column="battleKeyIds" property="battleKeyIds" />
+		<result column="resetKeyIds" property="resetKeyIds" />
+		<result column="resetTime" property="resetTime" />
+	</resultMap>
+	
+	<select id="selectByUserIdAndMatchType" resultMap="matchEntity">
+		select * from `${table_number}_match` where (`userId`=#{userId} and `matchType`=#{matchType})
+	</select>
+	<select id="selectByUserId" resultMap="matchEntity">
+		select * from `${table_number}_match` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="matchEntity">
+		select * from `${table_number}_match`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_match` (`userId`,`matchType`,`match_keyid`,`battleKeyIds`,`resetKeyIds`,`resetTime`) values (#{entity.userId},#{entity.matchType},#{entity.matchKeyId},#{entity.battleKeyIds},#{entity.resetKeyIds},#{entity.resetTime})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_match` set `userId`=#{entity.userId},`matchType`=#{entity.matchType},`match_keyid`=#{entity.matchKeyId},`battleKeyIds`=#{entity.battleKeyIds},`resetKeyIds`=#{entity.resetKeyIds},`resetTime`=#{entity.resetTime} where (`userId`=#{entity.userId} and `matchType`=#{entity.matchType})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_match` where (`userId`=#{entity.userId} and `matchType`=#{entity.matchType})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_match` (`userId`,`matchType`,`match_keyid`,`battleKeyIds`,`resetKeyIds`,`resetTime`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.matchType},#{item.matchKeyId},#{item.battleKeyIds},#{item.resetKeyIds},#{item.resetTime})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_match` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId} and `matchType`=#{item.matchType})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'match\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_match` (
+			`userId` bigint(20) DEFAULT '0',
+			`matchType` int(11) DEFAULT '0',
+			`match_keyid` int(11) DEFAULT '0',
+			`battleKeyIds` varchar(200) DEFAULT '',
+			`resetKeyIds` varchar(200) DEFAULT '',
+			`resetTime` bigint(20) DEFAULT '0',
+		PRIMARY KEY (`userId`,`matchType`),
+		KEY `userId` (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_match` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `matchType`=#{item.matchType}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `matchType`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `matchType`=#{item.matchType}) then #{item.matchType} 
+       	</foreach>
+        end,
+		 `match_keyid`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `matchType`=#{item.matchType}) then #{item.matchKeyId} 
+       	</foreach>
+        end,
+		 `battleKeyIds`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `matchType`=#{item.matchType}) then #{item.battleKeyIds} 
+       	</foreach>
+        end,
+		 `resetKeyIds`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `matchType`=#{item.matchType}) then #{item.resetKeyIds} 
+       	</foreach>
+        end,
+		 `resetTime`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `matchType`=#{item.matchType}) then #{item.resetTime} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId} and `matchType`=#{item.matchType})
+       	</foreach>
+	</update>
+</mapper>

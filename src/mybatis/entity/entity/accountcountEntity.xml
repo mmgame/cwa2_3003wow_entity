@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.AccountcountEntity">
+	<resultMap id="accountcountEntity" type="com.cwa.data.entity.domain.AccountcountEntity">
+		<result column="aid" property="aid" />
+		<result column="address" property="address" />
+		<result column="count" property="count" />
+		<result column="version" property="version" />
+	</resultMap>
+	
+	<select id="selectByAid" resultMap="accountcountEntity">
+		select * from `${table_number}_accountcount` where (`aid`=#{aid})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="accountcountEntity">
+		select * from `${table_number}_accountcount`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_accountcount` (`aid`,`address`,`count`,`version`) values (#{entity.aid},#{entity.address},#{entity.count},#{entity.version})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_accountcount` set `aid`=#{entity.aid},`address`=#{entity.address},`count`=#{entity.count},`version`=#{entity.version} where (`aid`=#{entity.aid})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_accountcount` where (`aid`=#{entity.aid})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_accountcount` (`aid`,`address`,`count`,`version`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.aid},#{item.address},#{item.count},#{item.version})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_accountcount` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`aid`=#{item.aid})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'accountcount\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_accountcount` (
+			`aid` int(11) DEFAULT '0',
+			`address` varchar(20) DEFAULT '',
+			`count` bigint(20) DEFAULT '0',
+			`version` bigint(20) DEFAULT '0',
+		PRIMARY KEY (`aid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_accountcount` set 
+		 `aid`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`aid`=#{item.aid}) then #{item.aid} 
+       	</foreach>
+        end,
+		 `address`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`aid`=#{item.aid}) then #{item.address} 
+       	</foreach>
+        end,
+		 `count`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`aid`=#{item.aid}) then #{item.count} 
+       	</foreach>
+        end,
+		 `version`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`aid`=#{item.aid}) then #{item.version} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`aid`=#{item.aid})
+       	</foreach>
+	</update>
+</mapper>

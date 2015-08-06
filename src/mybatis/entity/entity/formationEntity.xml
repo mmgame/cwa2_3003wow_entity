@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.FormationEntity">
+	<resultMap id="formationEntity" type="com.cwa.data.entity.domain.FormationEntity">
+		<result column="userId" property="userId" />
+		<result column="type" property="type" />
+		<result column="heros" property="heros" />
+		<result column="retinues" property="retinues" />
+	</resultMap>
+	
+	<select id="selectByUserIdAndType" resultMap="formationEntity">
+		select * from `${table_number}_formation` where (`userId`=#{userId} and `type`=#{type})
+	</select>
+	<select id="selectByUserId" resultMap="formationEntity">
+		select * from `${table_number}_formation` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="formationEntity">
+		select * from `${table_number}_formation`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_formation` (`userId`,`type`,`heros`,`retinues`) values (#{entity.userId},#{entity.type},#{entity.heros},#{entity.retinues})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_formation` set `userId`=#{entity.userId},`type`=#{entity.type},`heros`=#{entity.heros},`retinues`=#{entity.retinues} where (`userId`=#{entity.userId} and `type`=#{entity.type})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_formation` where (`userId`=#{entity.userId} and `type`=#{entity.type})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_formation` (`userId`,`type`,`heros`,`retinues`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.type},#{item.heros},#{item.retinues})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_formation` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId} and `type`=#{item.type})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'formation\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_formation` (
+			`userId` bigint(20) DEFAULT '0',
+			`type` int(11) DEFAULT '0',
+			`heros` varchar(200) DEFAULT '',
+			`retinues` varchar(200) DEFAULT '',
+		PRIMARY KEY (`userId`,`type`),
+		KEY `userId` (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_formation` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `type`=#{item.type}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `type`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `type`=#{item.type}) then #{item.type} 
+       	</foreach>
+        end,
+		 `heros`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `type`=#{item.type}) then #{item.heros} 
+       	</foreach>
+        end,
+		 `retinues`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `type`=#{item.type}) then #{item.retinues} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId} and `type`=#{item.type})
+       	</foreach>
+	</update>
+</mapper>

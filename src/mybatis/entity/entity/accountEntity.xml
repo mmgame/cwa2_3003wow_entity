@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.AccountEntity">
+	<resultMap id="accountEntity" type="com.cwa.data.entity.domain.AccountEntity">
+		<result column="accountId" property="accountId" />
+		<result column="account" property="account" />
+		<result column="channel" property="channel" />
+		<result column="password" property="password" />
+		<result column="createTime" property="createTime" />
+		<result column="rids" property="rids" />
+	</resultMap>
+	
+	<select id="selectByAccountId" resultMap="accountEntity">
+		select * from `${table_number}_account` where (`accountId`=#{accountId})
+	</select>
+	<select id="selectByAccountAndChannel" resultMap="accountEntity">
+		select * from `${table_number}_account` where (`account`=#{account} and `channel`=#{channel})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="accountEntity">
+		select * from `${table_number}_account`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_account` (`accountId`,`account`,`channel`,`password`,`createTime`,`rids`) values (#{entity.accountId},#{entity.account},#{entity.channel},#{entity.password},#{entity.createTime},#{entity.rids})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_account` set `accountId`=#{entity.accountId},`account`=#{entity.account},`channel`=#{entity.channel},`password`=#{entity.password},`createTime`=#{entity.createTime},`rids`=#{entity.rids} where (`accountId`=#{entity.accountId})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_account` where (`accountId`=#{entity.accountId})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_account` (`accountId`,`account`,`channel`,`password`,`createTime`,`rids`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.accountId},#{item.account},#{item.channel},#{item.password},#{item.createTime},#{item.rids})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_account` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`accountId`=#{item.accountId})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'account\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_account` (
+			`accountId` bigint(20) DEFAULT '0',
+			`account` varchar(50) DEFAULT '',
+			`channel` int(11) DEFAULT '0',
+			`password` varchar(50) DEFAULT '',
+			`createTime` bigint(20) DEFAULT '0',
+			`rids` varchar(255) DEFAULT '',
+		PRIMARY KEY (`accountId`),
+		KEY `account_channel` (`account`,`channel`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_account` set 
+		 `accountId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`accountId`=#{item.accountId}) then #{item.accountId} 
+       	</foreach>
+        end,
+		 `account`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`accountId`=#{item.accountId}) then #{item.account} 
+       	</foreach>
+        end,
+		 `channel`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`accountId`=#{item.accountId}) then #{item.channel} 
+       	</foreach>
+        end,
+		 `password`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`accountId`=#{item.accountId}) then #{item.password} 
+       	</foreach>
+        end,
+		 `createTime`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`accountId`=#{item.accountId}) then #{item.createTime} 
+       	</foreach>
+        end,
+		 `rids`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`accountId`=#{item.accountId}) then #{item.rids} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`accountId`=#{item.accountId})
+       	</foreach>
+	</update>
+</mapper>

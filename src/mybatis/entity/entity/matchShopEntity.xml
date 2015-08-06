@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.MatchShopEntity">
+	<resultMap id="matchShopEntity" type="com.cwa.data.entity.domain.MatchShopEntity">
+		<result column="userId" property="userId" />
+		<result column="shopType" property="shopType" />
+		<result column="shopId" property="shopId" />
+		<result column="resetTime" property="resetTime" />
+		<result column="goodsIndex" property="goodsIndex" />
+		<result column="refreshCount" property="refreshCount" />
+		<result column="creatTime" property="creatTime" />
+	</resultMap>
+	
+	<select id="selectByUserIdAndShopType" resultMap="matchShopEntity">
+		select * from `${table_number}_matchShop` where (`userId`=#{userId} and `shopType`=#{shopType})
+	</select>
+	<select id="selectByUserId" resultMap="matchShopEntity">
+		select * from `${table_number}_matchShop` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="matchShopEntity">
+		select * from `${table_number}_matchShop`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_matchShop` (`userId`,`shopType`,`shopId`,`resetTime`,`goodsIndex`,`refreshCount`,`creatTime`) values (#{entity.userId},#{entity.shopType},#{entity.shopId},#{entity.resetTime},#{entity.goodsIndex},#{entity.refreshCount},#{entity.creatTime})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_matchShop` set `userId`=#{entity.userId},`shopType`=#{entity.shopType},`shopId`=#{entity.shopId},`resetTime`=#{entity.resetTime},`goodsIndex`=#{entity.goodsIndex},`refreshCount`=#{entity.refreshCount},`creatTime`=#{entity.creatTime} where (`userId`=#{entity.userId} and `shopType`=#{entity.shopType})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_matchShop` where (`userId`=#{entity.userId} and `shopType`=#{entity.shopType})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_matchShop` (`userId`,`shopType`,`shopId`,`resetTime`,`goodsIndex`,`refreshCount`,`creatTime`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.shopType},#{item.shopId},#{item.resetTime},#{item.goodsIndex},#{item.refreshCount},#{item.creatTime})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_matchShop` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId} and `shopType`=#{item.shopType})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'matchShop\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_matchShop` (
+			`userId` bigint(20) DEFAULT '0',
+			`shopType` int(11) DEFAULT '0',
+			`shopId` int(11) DEFAULT '0',
+			`resetTime` bigint(20) DEFAULT '0',
+			`goodsIndex` varchar(200) DEFAULT '',
+			`refreshCount` int(11) DEFAULT '0',
+			`creatTime` bigint(20) DEFAULT '0',
+		PRIMARY KEY (`userId`,`shopType`),
+		KEY `userId` (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_matchShop` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `shopType`=#{item.shopType}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `shopType`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `shopType`=#{item.shopType}) then #{item.shopType} 
+       	</foreach>
+        end,
+		 `shopId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `shopType`=#{item.shopType}) then #{item.shopId} 
+       	</foreach>
+        end,
+		 `resetTime`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `shopType`=#{item.shopType}) then #{item.resetTime} 
+       	</foreach>
+        end,
+		 `goodsIndex`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `shopType`=#{item.shopType}) then #{item.goodsIndex} 
+       	</foreach>
+        end,
+		 `refreshCount`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `shopType`=#{item.shopType}) then #{item.refreshCount} 
+       	</foreach>
+        end,
+		 `creatTime`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `shopType`=#{item.shopType}) then #{item.creatTime} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId} and `shopType`=#{item.shopType})
+       	</foreach>
+	</update>
+</mapper>

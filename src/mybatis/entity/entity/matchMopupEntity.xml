@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.MatchMopupEntity">
+	<resultMap id="matchMopupEntity" type="com.cwa.data.entity.domain.MatchMopupEntity">
+		<result column="userId" property="userId" />
+		<result column="mopupCount" property="mopupCount" />
+		<result column="resetTime" property="resetTime" />
+	</resultMap>
+	
+	<select id="selectByUserId" resultMap="matchMopupEntity">
+		select * from `${table_number}_matchMopup` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="matchMopupEntity">
+		select * from `${table_number}_matchMopup`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_matchMopup` (`userId`,`mopupCount`,`resetTime`) values (#{entity.userId},#{entity.mopupCount},#{entity.resetTime})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_matchMopup` set `userId`=#{entity.userId},`mopupCount`=#{entity.mopupCount},`resetTime`=#{entity.resetTime} where (`userId`=#{entity.userId})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_matchMopup` where (`userId`=#{entity.userId})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_matchMopup` (`userId`,`mopupCount`,`resetTime`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.mopupCount},#{item.resetTime})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_matchMopup` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'matchMopup\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_matchMopup` (
+			`userId` bigint(20) DEFAULT '0',
+			`mopupCount` int(11) DEFAULT '0',
+			`resetTime` bigint(20) DEFAULT '0',
+		PRIMARY KEY (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_matchMopup` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `mopupCount`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.mopupCount} 
+       	</foreach>
+        end,
+		 `resetTime`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.resetTime} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId})
+       	</foreach>
+	</update>
+</mapper>

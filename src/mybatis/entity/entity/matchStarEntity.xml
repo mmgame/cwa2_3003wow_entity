@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.MatchStarEntity">
+	<resultMap id="matchStarEntity" type="com.cwa.data.entity.domain.MatchStarEntity">
+		<result column="userId" property="userId" />
+		<result column="matchType" property="matchType" />
+		<result column="chapterId" property="chapterId" />
+		<result column="chapterStars" property="chapterStars" />
+		<result column="chapterScores" property="chapterScores" />
+	</resultMap>
+	
+	<select id="selectByUserIdAndMatchTypeAndChapterId" resultMap="matchStarEntity">
+		select * from `${table_number}_matchStar` where (`userId`=#{userId} and `matchType`=#{matchType} and `chapterId`=#{chapterId})
+	</select>
+	<select id="selectByUserIdAndMatchType" resultMap="matchStarEntity">
+		select * from `${table_number}_matchStar` where (`userId`=#{userId} and `matchType`=#{matchType})
+	</select>
+	<select id="selectByUserId" resultMap="matchStarEntity">
+		select * from `${table_number}_matchStar` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="matchStarEntity">
+		select * from `${table_number}_matchStar`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_matchStar` (`userId`,`matchType`,`chapterId`,`chapterStars`,`chapterScores`) values (#{entity.userId},#{entity.matchType},#{entity.chapterId},#{entity.chapterStars},#{entity.chapterScores})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_matchStar` set `userId`=#{entity.userId},`matchType`=#{entity.matchType},`chapterId`=#{entity.chapterId},`chapterStars`=#{entity.chapterStars},`chapterScores`=#{entity.chapterScores} where (`userId`=#{entity.userId} and `matchType`=#{entity.matchType} and `chapterId`=#{entity.chapterId})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_matchStar` where (`userId`=#{entity.userId} and `matchType`=#{entity.matchType} and `chapterId`=#{entity.chapterId})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_matchStar` (`userId`,`matchType`,`chapterId`,`chapterStars`,`chapterScores`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.matchType},#{item.chapterId},#{item.chapterStars},#{item.chapterScores})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_matchStar` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId} and `matchType`=#{item.matchType} and `chapterId`=#{item.chapterId})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'matchStar\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_matchStar` (
+			`userId` bigint(20) DEFAULT '0',
+			`matchType` int(11) DEFAULT '0',
+			`chapterId` int(11) DEFAULT '0',
+			`chapterStars` varchar(100) DEFAULT '',
+			`chapterScores` varchar(100) DEFAULT '',
+		PRIMARY KEY (`userId`,`matchType`,`chapterId`),
+		KEY `userId_matchType` (`userId`,`matchType`),
+		KEY `userId` (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_matchStar` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `matchType`=#{item.matchType} and `chapterId`=#{item.chapterId}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `matchType`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `matchType`=#{item.matchType} and `chapterId`=#{item.chapterId}) then #{item.matchType} 
+       	</foreach>
+        end,
+		 `chapterId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `matchType`=#{item.matchType} and `chapterId`=#{item.chapterId}) then #{item.chapterId} 
+       	</foreach>
+        end,
+		 `chapterStars`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `matchType`=#{item.matchType} and `chapterId`=#{item.chapterId}) then #{item.chapterStars} 
+       	</foreach>
+        end,
+		 `chapterScores`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `matchType`=#{item.matchType} and `chapterId`=#{item.chapterId}) then #{item.chapterScores} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId} and `matchType`=#{item.matchType} and `chapterId`=#{item.chapterId})
+       	</foreach>
+	</update>
+</mapper>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.EquipmentEntity">
+	<resultMap id="equipmentEntity" type="com.cwa.data.entity.domain.EquipmentEntity">
+		<result column="userId" property="userId" />
+		<result column="heroId" property="heroId" />
+		<result column="positionId" property="positionId" />
+		<result column="equipmentLevel" property="equipmentLevel" />
+		<result column="equipmentQuality" property="equipmentQuality" />
+		<result column="plugs" property="plugs" />
+	</resultMap>
+	
+	<select id="selectByUserIdAndHeroIdAndPositionId" resultMap="equipmentEntity">
+		select * from `${table_number}_equipment` where (`userId`=#{userId} and `heroId`=#{heroId} and `positionId`=#{positionId})
+	</select>
+	<select id="selectByUserIdAndHeroId" resultMap="equipmentEntity">
+		select * from `${table_number}_equipment` where (`userId`=#{userId} and `heroId`=#{heroId})
+	</select>
+	<select id="selectByUserId" resultMap="equipmentEntity">
+		select * from `${table_number}_equipment` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="equipmentEntity">
+		select * from `${table_number}_equipment`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_equipment` (`userId`,`heroId`,`positionId`,`equipmentLevel`,`equipmentQuality`,`plugs`) values (#{entity.userId},#{entity.heroId},#{entity.positionId},#{entity.equipmentLevel},#{entity.equipmentQuality},#{entity.plugs})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_equipment` set `userId`=#{entity.userId},`heroId`=#{entity.heroId},`positionId`=#{entity.positionId},`equipmentLevel`=#{entity.equipmentLevel},`equipmentQuality`=#{entity.equipmentQuality},`plugs`=#{entity.plugs} where (`userId`=#{entity.userId} and `heroId`=#{entity.heroId} and `positionId`=#{entity.positionId})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_equipment` where (`userId`=#{entity.userId} and `heroId`=#{entity.heroId} and `positionId`=#{entity.positionId})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_equipment` (`userId`,`heroId`,`positionId`,`equipmentLevel`,`equipmentQuality`,`plugs`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.heroId},#{item.positionId},#{item.equipmentLevel},#{item.equipmentQuality},#{item.plugs})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_equipment` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId} and `heroId`=#{item.heroId} and `positionId`=#{item.positionId})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'equipment\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_equipment` (
+			`userId` bigint(20) DEFAULT '0',
+			`heroId` int(11) DEFAULT '0',
+			`positionId` int(11) DEFAULT '0',
+			`equipmentLevel` int(11) DEFAULT '0',
+			`equipmentQuality` int(11) DEFAULT '0',
+			`plugs` varchar(60) DEFAULT '',
+		PRIMARY KEY (`userId`,`heroId`,`positionId`),
+		KEY `userId_heroId` (`userId`,`heroId`),
+		KEY `userId` (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_equipment` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId} and `positionId`=#{item.positionId}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `heroId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId} and `positionId`=#{item.positionId}) then #{item.heroId} 
+       	</foreach>
+        end,
+		 `positionId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId} and `positionId`=#{item.positionId}) then #{item.positionId} 
+       	</foreach>
+        end,
+		 `equipmentLevel`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId} and `positionId`=#{item.positionId}) then #{item.equipmentLevel} 
+       	</foreach>
+        end,
+		 `equipmentQuality`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId} and `positionId`=#{item.positionId}) then #{item.equipmentQuality} 
+       	</foreach>
+        end,
+		 `plugs`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `heroId`=#{item.heroId} and `positionId`=#{item.positionId}) then #{item.plugs} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId} and `heroId`=#{item.heroId} and `positionId`=#{item.positionId})
+       	</foreach>
+	</update>
+</mapper>

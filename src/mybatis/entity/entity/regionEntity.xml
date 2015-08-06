@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.RegionEntity">
+	<resultMap id="regionEntity" type="com.cwa.data.entity.domain.RegionEntity">
+		<result column="rid" property="rid" />
+		<result column="useState" property="useState" />
+		<result column="state" property="state" />
+		<result column="name" property="name" />
+	</resultMap>
+	
+	<select id="selectByRid" resultMap="regionEntity">
+		select * from `${table_number}_region` where (`rid`=#{rid})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="regionEntity">
+		select * from `${table_number}_region`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_region` (`rid`,`useState`,`state`,`name`) values (#{entity.rid},#{entity.useState},#{entity.state},#{entity.name})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_region` set `rid`=#{entity.rid},`useState`=#{entity.useState},`state`=#{entity.state},`name`=#{entity.name} where (`rid`=#{entity.rid})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_region` where (`rid`=#{entity.rid})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_region` (`rid`,`useState`,`state`,`name`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.rid},#{item.useState},#{item.state},#{item.name})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_region` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`rid`=#{item.rid})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'region\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_region` (
+			`rid` int(11) DEFAULT '0',
+			`useState` int(11) DEFAULT '0',
+			`state` int(11) DEFAULT '0',
+			`name` varchar(50) DEFAULT '',
+		PRIMARY KEY (`rid`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_region` set 
+		 `rid`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`rid`=#{item.rid}) then #{item.rid} 
+       	</foreach>
+        end,
+		 `useState`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`rid`=#{item.rid}) then #{item.useState} 
+       	</foreach>
+        end,
+		 `state`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`rid`=#{item.rid}) then #{item.state} 
+       	</foreach>
+        end,
+		 `name`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`rid`=#{item.rid}) then #{item.name} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`rid`=#{item.rid})
+       	</foreach>
+	</update>
+</mapper>

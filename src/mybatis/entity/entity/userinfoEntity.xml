@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.UserinfoEntity">
+	<resultMap id="userinfoEntity" type="com.cwa.data.entity.domain.UserinfoEntity">
+		<result column="userId" property="userId" />
+		<result column="name" property="name" />
+		<result column="level" property="level" />
+		<result column="experience" property="experience" />
+		<result column="icon" property="icon" />
+		<result column="modifyNameCount" property="modifyNameCount" />
+		<result column="power" property="power" />
+		<result column="buyCount" property="buyCount" />
+		<result column="resetTime" property="resetTime" />
+		<result column="eventState" property="eventState" />
+		<result column="functionState" property="functionState" />
+	</resultMap>
+	
+	<select id="selectByUserId" resultMap="userinfoEntity">
+		select * from `${table_number}_userinfo` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="userinfoEntity">
+		select * from `${table_number}_userinfo`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_userinfo` (`userId`,`name`,`level`,`experience`,`icon`,`modifyNameCount`,`power`,`buyCount`,`resetTime`,`eventState`,`functionState`) values (#{entity.userId},#{entity.name},#{entity.level},#{entity.experience},#{entity.icon},#{entity.modifyNameCount},#{entity.power},#{entity.buyCount},#{entity.resetTime},#{entity.eventState},#{entity.functionState})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_userinfo` set `userId`=#{entity.userId},`name`=#{entity.name},`level`=#{entity.level},`experience`=#{entity.experience},`icon`=#{entity.icon},`modifyNameCount`=#{entity.modifyNameCount},`power`=#{entity.power},`buyCount`=#{entity.buyCount},`resetTime`=#{entity.resetTime},`eventState`=#{entity.eventState},`functionState`=#{entity.functionState} where (`userId`=#{entity.userId})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_userinfo` where (`userId`=#{entity.userId})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_userinfo` (`userId`,`name`,`level`,`experience`,`icon`,`modifyNameCount`,`power`,`buyCount`,`resetTime`,`eventState`,`functionState`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.name},#{item.level},#{item.experience},#{item.icon},#{item.modifyNameCount},#{item.power},#{item.buyCount},#{item.resetTime},#{item.eventState},#{item.functionState})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_userinfo` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'userinfo\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_userinfo` (
+			`userId` bigint(20) DEFAULT '0',
+			`name` varchar(32) DEFAULT '',
+			`level` int(11) DEFAULT '0',
+			`experience` int(11) DEFAULT '0',
+			`icon` int(11) DEFAULT '0',
+			`modifyNameCount` int(11) DEFAULT '0',
+			`power` int(11) DEFAULT '0',
+			`buyCount` int(11) DEFAULT '0',
+			`resetTime` bigint(20) DEFAULT '0',
+			`eventState` varchar(255) DEFAULT '',
+			`functionState` varchar(255) DEFAULT '',
+		PRIMARY KEY (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_userinfo` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `name`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.name} 
+       	</foreach>
+        end,
+		 `level`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.level} 
+       	</foreach>
+        end,
+		 `experience`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.experience} 
+       	</foreach>
+        end,
+		 `icon`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.icon} 
+       	</foreach>
+        end,
+		 `modifyNameCount`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.modifyNameCount} 
+       	</foreach>
+        end,
+		 `power`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.power} 
+       	</foreach>
+        end,
+		 `buyCount`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.buyCount} 
+       	</foreach>
+        end,
+		 `resetTime`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.resetTime} 
+       	</foreach>
+        end,
+		 `eventState`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.eventState} 
+       	</foreach>
+        end,
+		 `functionState`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId}) then #{item.functionState} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId})
+       	</foreach>
+	</update>
+</mapper>

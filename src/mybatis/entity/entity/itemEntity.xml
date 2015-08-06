@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.ItemEntity">
+	<resultMap id="itemEntity" type="com.cwa.data.entity.domain.ItemEntity">
+		<result column="userId" property="userId" />
+		<result column="itemId" property="itemId" />
+		<result column="count" property="count" />
+	</resultMap>
+	
+	<select id="selectByUserIdAndItemId" resultMap="itemEntity">
+		select * from `${table_number}_item` where (`userId`=#{userId} and `itemId`=#{itemId})
+	</select>
+	<select id="selectByUserId" resultMap="itemEntity">
+		select * from `${table_number}_item` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="itemEntity">
+		select * from `${table_number}_item`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_item` (`userId`,`itemId`,`count`) values (#{entity.userId},#{entity.itemId},#{entity.count})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_item` set `userId`=#{entity.userId},`itemId`=#{entity.itemId},`count`=#{entity.count} where (`userId`=#{entity.userId} and `itemId`=#{entity.itemId})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_item` where (`userId`=#{entity.userId} and `itemId`=#{entity.itemId})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_item` (`userId`,`itemId`,`count`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.itemId},#{item.count})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_item` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId} and `itemId`=#{item.itemId})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'item\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_item` (
+			`userId` bigint(20) DEFAULT '0',
+			`itemId` int(11) DEFAULT '0',
+			`count` int(11) DEFAULT '0',
+		PRIMARY KEY (`userId`,`itemId`),
+		KEY `userId` (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_item` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `itemId`=#{item.itemId}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `itemId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `itemId`=#{item.itemId}) then #{item.itemId} 
+       	</foreach>
+        end,
+		 `count`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `itemId`=#{item.itemId}) then #{item.count} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId} and `itemId`=#{item.itemId})
+       	</foreach>
+	</update>
+</mapper>

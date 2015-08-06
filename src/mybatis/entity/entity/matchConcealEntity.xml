@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.MatchConcealEntity">
+	<resultMap id="matchConcealEntity" type="com.cwa.data.entity.domain.MatchConcealEntity">
+		<result column="userId" property="userId" />
+		<result column="concealId" property="concealId" />
+		<result column="resetTime" property="resetTime" />
+	</resultMap>
+	
+	<select id="selectByUserIdAndConcealId" resultMap="matchConcealEntity">
+		select * from `${table_number}_matchConceal` where (`userId`=#{userId} and `concealId`=#{concealId})
+	</select>
+	<select id="selectByUserId" resultMap="matchConcealEntity">
+		select * from `${table_number}_matchConceal` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="matchConcealEntity">
+		select * from `${table_number}_matchConceal`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_matchConceal` (`userId`,`concealId`,`resetTime`) values (#{entity.userId},#{entity.concealId},#{entity.resetTime})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_matchConceal` set `userId`=#{entity.userId},`concealId`=#{entity.concealId},`resetTime`=#{entity.resetTime} where (`userId`=#{entity.userId} and `concealId`=#{entity.concealId})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_matchConceal` where (`userId`=#{entity.userId} and `concealId`=#{entity.concealId})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_matchConceal` (`userId`,`concealId`,`resetTime`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.concealId},#{item.resetTime})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_matchConceal` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId} and `concealId`=#{item.concealId})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'matchConceal\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_matchConceal` (
+			`userId` bigint(20) DEFAULT '0',
+			`concealId` int(11) DEFAULT '0',
+			`resetTime` bigint(20) DEFAULT '0',
+		PRIMARY KEY (`userId`,`concealId`),
+		KEY `userId` (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_matchConceal` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `concealId`=#{item.concealId}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `concealId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `concealId`=#{item.concealId}) then #{item.concealId} 
+       	</foreach>
+        end,
+		 `resetTime`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `concealId`=#{item.concealId}) then #{item.resetTime} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId} and `concealId`=#{item.concealId})
+       	</foreach>
+	</update>
+</mapper>

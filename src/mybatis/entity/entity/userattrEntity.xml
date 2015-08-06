@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cwa.data.entity.domain.UserattrEntity">
+	<resultMap id="userattrEntity" type="com.cwa.data.entity.domain.UserattrEntity">
+		<result column="userId" property="userId" />
+		<result column="attrType" property="attrType" />
+		<result column="attrValue" property="attrValue" />
+	</resultMap>
+	
+	<select id="selectByUserIdAndAttrType" resultMap="userattrEntity">
+		select * from `${table_number}_userattr` where (`userId`=#{userId} and `attrType`=#{attrType})
+	</select>
+	<select id="selectByUserId" resultMap="userattrEntity">
+		select * from `${table_number}_userattr` where (`userId`=#{userId})
+	</select>
+	
+	<select id="selectAllEntity" resultMap="userattrEntity">
+		select * from `${table_number}_userattr`
+	</select>
+	
+	<insert id="insert" parameterType="java.util.Map">
+		insert into `${table_number}_userattr` (`userId`,`attrType`,`attrValue`) values (#{entity.userId},#{entity.attrType},#{entity.attrValue})
+	</insert>
+	
+	<update id="update" parameterType="java.util.Map">
+		update `${table_number}_userattr` set `userId`=#{entity.userId},`attrType`=#{entity.attrType},`attrValue`=#{entity.attrValue} where (`userId`=#{entity.userId} and `attrType`=#{entity.attrType})
+	</update>
+	
+	<delete id="remove" parameterType="java.util.Map">
+		delete from `${table_number}_userattr` where (`userId`=#{entity.userId} and `attrType`=#{entity.attrType})
+	</delete>
+	
+	<insert id="batchInsert" parameterType="java.util.Map">
+		insert into `${table_number}_userattr` (`userId`,`attrType`,`attrValue`) values 
+		<foreach collection="entity_list" item="item" index="index" separator=",">
+		(#{item.userId},#{item.attrType},#{item.attrValue})
+		</foreach> 
+	</insert> 
+	
+	<delete id= "batchRemove" parameterType="java.util.Map">
+		delete from `${table_number}_userattr` where
+       <foreach collection="entity_list" item= "item" index ="index" separator="or">
+       (`userId`=#{item.userId} and `attrType`=#{item.attrType})
+       </foreach>
+    </delete>
+    
+	<select id="selectAllTableName" parameterType="java.util.Map">
+		select TABLE_NAME from information_schema.tables where TABLE_SCHEMA = #{db_number} and TABLE_NAME like 'userattr\_%'
+	</select>
+	
+	<update id="createTable" parameterType="java.util.Map">
+		CREATE TABLE `${table_number}_userattr` (
+			`userId` bigint(20) DEFAULT '0',
+			`attrType` int(11) DEFAULT '0',
+			`attrValue` bigint(20) DEFAULT '0',
+		PRIMARY KEY (`userId`,`attrType`),
+		KEY `userId` (`userId`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="batchUpdate" parameterType="java.util.Map">
+		 update `${table_number}_userattr` set 
+		 `userId`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `attrType`=#{item.attrType}) then #{item.userId} 
+       	</foreach>
+        end,
+		 `attrType`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `attrType`=#{item.attrType}) then #{item.attrType} 
+       	</foreach>
+        end,
+		 `attrValue`=case 
+		 <foreach collection="entity_list" item="item" index="index">
+           when (`userId`=#{item.userId} and `attrType`=#{item.attrType}) then #{item.attrValue} 
+       	</foreach>
+        end
+		where
+       	<foreach collection="entity_list" item="item" index="index" separator="or">
+        (`userId`=#{item.userId} and `attrType`=#{item.attrType})
+       	</foreach>
+	</update>
+</mapper>
